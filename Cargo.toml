@@ -1,0 +1,17 @@
+[package]
+name = "sellafield"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+members = [
+  "vm_test",
+]
+
+[dependencies]
+anyhow = { version = "1.0.41", features = ["backtrace"] }
+argh = "0.1.4"
+libc = "0.2.97"
+errno = "0.2.7"
+fs-err = "2.6.0"
+rhai = "1.4.1"
