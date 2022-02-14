@@ -37,12 +37,6 @@ jobs:
           image: tonistiigi/binfmt:latest
           platforms: x86_64
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
-          cache: 'pip'
-
       - name: Install Transient
         run: pip3 install transient
 
