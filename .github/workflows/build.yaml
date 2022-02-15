@@ -34,7 +34,7 @@ jobs:
           x86_64-linux-musl-gcc --version
 
       - name: Install QEMU
-        run: sudo apt-get -y install qemu qemu-kvm
+        run: sudo apt-get -y install qemu
 
       - name: Install Transient
         run: pip3 install transient
