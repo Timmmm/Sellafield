@@ -24,11 +24,14 @@ jobs:
           git version
           cargo version
 
-      - name: Install Musl target
+      - name: Install Musl cross-compiler
+        # Unfortunately Ubuntu got the name of the compiler wrong so we have
+        # to create a link for the correct name.
         run: >
           sudo apt-get install musl-tools &&
+          sudo ln -s $(which musl-gcc) /usr/bin/x86_64-linux-musl-gcc &&
           rustup target add x86_64-unknown-linux-musl &&
-          musl-gcc --version
+          x86_64-linux-musl-gcc --version
 
       - name: Set up QEMU
         id: qemu
