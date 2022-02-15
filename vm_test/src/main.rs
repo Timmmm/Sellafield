@@ -6,17 +6,17 @@ fn main() -> Result<()> {
 
     build_linux_release()?;
 
-    let output = run_vm()?;
+    let (stdout, stderr) = run_vm()?;
 
     // TODO: More robust checks.
-    if !output.contains("test_output") {
+    if !stdout.contains("test_output") {
         bail!("`test_output` not found in output");
     }
-    if !output.contains("core.vagrant.generate_core_dump") {
+    if !stdout.contains("core.vagrant.generate_core_dump") {
         bail!("`core.vagrant.generate_core_dump` not found in output");
     }
 
-    eprintln!("Test succeeded. Output:\n{}", output);
+    eprintln!("Test succeeded.\n--- Stdout ---\n{}--- Stderr ---\n{}", stdout, stderr);
 
     Ok(())
 }
@@ -37,12 +37,13 @@ fn build_linux_release() -> Result<()> {
     Ok(())
 }
 
-fn run_vm() -> Result<String> {
+fn run_vm() -> Result<(String, String)> {
     std::fs::copy("../target/x86_64-unknown-linux-musl/release/sellafield", "../test_input/sellafield")?;
 
     // Unfortunately `--copy-out-after /home/vagrant/test_output:test_output`
     // gives a permission error that I'm not sure about but we can just scrape stdout.
     let output = Command::new("transient")
+        .arg("--verbose")
         .arg("run")
         .arg("centos/7:2004.01")
         .arg("--copy-in-before")
@@ -62,7 +63,7 @@ fn run_vm() -> Result<String> {
         bail!("Transient run failed.\n--- Stdout ---\n{}--- Stderr ---\n{}", stdout, stderr);
     }
 
-    Ok(stdout)
+    Ok((stdout, stderr))
 }
 
 fn latin1_to_string(s: &[u8]) -> String {
