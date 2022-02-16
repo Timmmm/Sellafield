@@ -42,7 +42,8 @@ fn run_vm() -> Result<(String, String)> {
 
     // Unfortunately `--copy-out-after /home/vagrant/test_output:test_output`
     // gives a permission error that I'm not sure about but we can just scrape stdout.
-    let output = Command::new("transient")
+    let mut command = Command::new("transient");
+    command
         .arg("--verbose")
         .arg("run")
         .arg("centos/7:2004.01")
@@ -53,8 +54,11 @@ fn run_vm() -> Result<(String, String)> {
         .arg("--")
         .arg("-m")
         .arg("1G")
-        .current_dir("..")
-        .output()?;
+        .current_dir("..");
+
+    eprintln!("Executing: {:?}", command);
+
+    let output = command.output()?;
 
     let stdout = latin1_to_string(&output.stdout);
     let stderr = latin1_to_string(&output.stderr);
