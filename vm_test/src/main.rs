@@ -1,6 +1,8 @@
 use anyhow::{bail, Result};
 use std::process::Command;
 
+mod command_capture;
+
 fn main() -> Result<()> {
     eprintln!("Testing Sellafield using a VM");
 
@@ -58,12 +60,12 @@ fn run_vm() -> Result<(String, String)> {
 
     eprintln!("Executing: {:?}", command);
 
-    let output = command.output()?;
+    let (status, stdout, stderr) = command_capture::run_and_capture(&mut command)?;
 
-    let stdout = latin1_to_string(&output.stdout);
-    let stderr = latin1_to_string(&output.stderr);
+    let stdout = latin1_to_string(&stdout);
+    let stderr = latin1_to_string(&stderr);
 
-    if !output.status.success() {
+    if !status.success() {
         bail!("Transient run failed.\n--- Stdout ---\n{}--- Stderr ---\n{}", stdout, stderr);
     }
 
